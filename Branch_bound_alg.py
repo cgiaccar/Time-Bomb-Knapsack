@@ -53,14 +53,15 @@ def solve_deterministic_01KP(w, p, c):
 
 
 def compute_lower_bound(item_set, capacity):
-    return None
+    return 0
 
 
 def compute_upper_bound(item_set, capacity):
-    return None
+    return capacity
 
 
 def Explore_Node(T_prime, p, pi, n, c, w, T, S, S_neg, z_opt):
+    print(S)
     item_set = [j for j in range(1, n+1) if j not in S+S_neg]
     knapsack_capacity = c - sum(w[j] for j in S)
     z_low = compute_lower_bound(item_set, knapsack_capacity)
@@ -84,10 +85,8 @@ def Explore_Node(T_prime, p, pi, n, c, w, T, S, S_neg, z_opt):
         # 'items' is the unfixed time-bomb items to chose from
         items = [j for j in T if j not in S+S_neg]
         chosen_j = choose_TB_item(items, w, p, c-sum(w[j] for j in S))
-        Explore_Node(T_prime, p, pi, n, c, w, T,
-                     S.append(chosen_j), S_neg, z_opt)
-        Explore_Node(T_prime, p, pi, n, c, w, T, S,
-                     S_neg.append(chosen_j), z_opt)
+        Explore_Node(T_prime, p, pi, n, c, w, T, S+[chosen_j], S_neg, z_opt)
+        Explore_Node(T_prime, p, pi, n, c, w, T, S, S_neg+[chosen_j], z_opt)
 
     return None
 
@@ -95,9 +94,19 @@ def Explore_Node(T_prime, p, pi, n, c, w, T, S, S_neg, z_opt):
 def TB_Branch_Bound(n, w, p, pi, c):
     T = [pi.index(j) for j in pi if j < 1]  # set of time-bomb items (?)
     T_prime = [pi.index(j) for j in pi if j >= 1]   # deterministic items
-    S = 0
-    S_neg = 0
+    S = [0]
+    S_neg = [0]
     z_opt = 0
 
     Explore_Node(T_prime, p, pi, n, c, w, T, S, S_neg, z_opt)
     return z_opt
+
+
+w = [4, 2, 5]  # weight
+p = [10, 5, 18]  # profit
+q = [0, 0, 0.2]  # probability of exploding
+pi = [1-i for i in q]  # probability of NOT exploding
+c = 1000  # capacity
+n = len(w)  # number of items
+
+print(TB_Branch_Bound(n, w, p, pi, c))
