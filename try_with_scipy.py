@@ -19,13 +19,12 @@ n = len(w)  # number of items
 
 T = [pi.index(j) for j in pi if j < 1]  # set of time-bomb items
 
-
 bounds = optimize.Bounds(0, 1)  # 0 <= x_i <= 1
 integrality = np.full_like(p, True)  # x_i are integers
 constraints = optimize.LinearConstraint(A=w, lb=0, ub=c)
 res = milp(c=-p, constraints=constraints,
            integrality=integrality, bounds=bounds)
 
-print(res.success)
-print(res.fun)
-print(res.x)
+print(res.success)   # print if resolution is successful
+print(res.fun)       # print value of objective fz
+print(res.x)         # print value of x variables
