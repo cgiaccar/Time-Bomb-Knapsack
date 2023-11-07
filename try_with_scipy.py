@@ -6,6 +6,8 @@ Created on Sat Oct 21 17:49:57 2023
 @author: Camilla
 """
 
+###################### SIMPLE KNAPSACK ##########################
+
 import numpy as np
 from scipy import optimize
 from scipy.optimize import milp
@@ -28,3 +30,5 @@ res = milp(c=-p, constraints=constraints,
 print(res.success)   # print if resolution is successful
 print(res.fun)       # print value of objective fz
 print(res.x)         # print value of x variables
+
+######################################################################

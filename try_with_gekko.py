@@ -12,32 +12,59 @@ Exception: @error: Inequality Definition
 
 @author: Camilla
 """
+
+###################### SIMPLE KNAPSACK ##########################
+
 import numpy as np
 from gekko import GEKKO
 
 w = [4, 2, 5, 4, 5, 1, 3, 5]  # weight
 p = [10, 5, 18, 12, 15, 1, 2, 8]  # profit
-q = [0, 0, 0.2, 0.5, 0.8, 0.1, 0, 0.7]  # probability of exploding
-pi = [1-i for i in q]  # probability of NOT exploding
 c = 15  # capacity
 n = len(w)  # number of items
-
-T = [pi.index(j) for j in pi if j < 1]  # set of time-bomb items
-print(T)
-print(len(T))
-
 
 m = GEKKO(remote=False)  # create GEKKO model
 
 x = [m.Var(lb=0, ub=1, integer=True) for j in range(n)]
-alpha = [m.Var(lb=0, ub=1) for j in range(len(T))]
 m.Equations([sum(w[j]*x[j] for j in range(n)) <= c])
-m.Equations([alpha[j] == 1-q[j]*x[j] for j in range(len(T))])
-m.Maximize(sum(p[j]*x[j] for j in range(n))
-           * (np.prod(alpha[j] for j in range(len(T)))))
+m.Maximize(sum(p[j]*x[j] for j in range(n)))
 
 m.solve(disp=True)
 print(x)  # print solution
+
+######################################################################
+
+
+###################### FULL TRY WITH "invalid inequalities" ERROR ##########################
+
+# import numpy as np
+# from gekko import GEKKO
+
+# w = [4, 2, 5, 4, 5, 1, 3, 5]  # weight
+# p = [10, 5, 18, 12, 15, 1, 2, 8]  # profit
+# q = [0, 0, 0.2, 0.5, 0.8, 0.1, 0, 0.7]  # probability of exploding
+# pi = [1-i for i in q]  # probability of NOT exploding
+# c = 15  # capacity
+# n = len(w)  # number of items
+
+# T = [pi.index(j) for j in pi if j < 1]  # set of time-bomb items
+# print(T)
+# print(len(T))
+
+
+# m = GEKKO(remote=False)  # create GEKKO model
+
+# x = [m.Var(lb=0, ub=1, integer=True) for j in range(n)]
+# alpha = [m.Var(lb=0, ub=1) for j in range(len(T))]
+# m.Equations([sum(w[j]*x[j] for j in range(n)) <= c])
+# m.Equations([alpha[j] == 1-q[j]*x[j] for j in range(len(T))])
+# m.Maximize(sum(p[j]*x[j] for j in range(n))
+#            * (np.prod(alpha[j] for j in range(len(T)))))
+
+# m.solve(disp=True)
+# print(x)  # print solution
+
+######################################################################
 
 
 ###################### SIMPLE FOUND ONLINE ##########################
