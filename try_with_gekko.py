@@ -3,31 +3,37 @@
 """
 Created on Wed Oct 11 19:16:22 2023
 
-Exception: @error: Inequality Definition
- invalid inequalities: z > x < y
- maximize((((((((((0+((10)*(int_v1)))+((5)*(int_v2)))+((18)*(int_v3)))+((12)*(in
- t_v4)))+((15)*(int_v5)))+((1)*(int_v6)))+((2)*(int_v7)))+((8)*(int_v8))))*(<gen
- eratorobject<genexpr>at0x7f806d1c8ac0>))
- STOPPING . . .
+!!!! Not sure if it's working CORRECTLY, but it is indeed working !!!!
 
 @author: Camilla
 """
 
-###################### SIMPLE KNAPSACK ##########################
+###################### FULL TRY ##########################
 
 import numpy as np
 from gekko import GEKKO
 
 w = [4, 2, 5, 4, 5, 1, 3, 5]  # weight
 p = [10, 5, 18, 12, 15, 1, 2, 8]  # profit
+q = [0, 0, 0.2, 0.5, 0.8, 0.1, 0, 0.7]  # probability of exploding
+pi = [1-i for i in q]  # probability of NOT exploding
 c = 15  # capacity
 n = len(w)  # number of items
 
+T = [pi.index(j) for j in pi if j < 1]  # set of time-bomb items
+
+
 m = GEKKO(remote=False)  # create GEKKO model
 
+# variables
 x = [m.Var(lb=0, ub=1, integer=True) for j in range(n)]
+
+# constraint
 m.Equations([sum(w[j]*x[j] for j in range(n)) <= c])
-m.Maximize(sum(p[j]*x[j] for j in range(n)))
+
+# objective function
+m.Maximize(sum(p[i]*x[i] for i in range(n)) *
+           np.prod([1-q[j]*x[j] for j in range(len(T))]))
 
 m.solve(disp=True)
 print(x)  # print solution
@@ -35,31 +41,21 @@ print(x)  # print solution
 ######################################################################
 
 
-###################### FULL TRY WITH "invalid inequalities" ERROR ##########################
+###################### SIMPLE KNAPSACK ##########################
 
 # import numpy as np
 # from gekko import GEKKO
 
 # w = [4, 2, 5, 4, 5, 1, 3, 5]  # weight
 # p = [10, 5, 18, 12, 15, 1, 2, 8]  # profit
-# q = [0, 0, 0.2, 0.5, 0.8, 0.1, 0, 0.7]  # probability of exploding
-# pi = [1-i for i in q]  # probability of NOT exploding
 # c = 15  # capacity
 # n = len(w)  # number of items
-
-# T = [pi.index(j) for j in pi if j < 1]  # set of time-bomb items
-# print(T)
-# print(len(T))
-
 
 # m = GEKKO(remote=False)  # create GEKKO model
 
 # x = [m.Var(lb=0, ub=1, integer=True) for j in range(n)]
-# alpha = [m.Var(lb=0, ub=1) for j in range(len(T))]
 # m.Equations([sum(w[j]*x[j] for j in range(n)) <= c])
-# m.Equations([alpha[j] == 1-q[j]*x[j] for j in range(len(T))])
-# m.Maximize(sum(p[j]*x[j] for j in range(n))
-#            * (np.prod(alpha[j] for j in range(len(T)))))
+# m.Maximize(sum(p[j]*x[j] for j in range(n)))
 
 # m.solve(disp=True)
 # print(x)  # print solution
