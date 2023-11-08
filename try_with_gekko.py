@@ -15,7 +15,8 @@ from gekko import GEKKO
 
 w = [4, 2, 5, 4, 5, 1, 3, 5]  # weight
 p = [10, 5, 18, 12, 15, 1, 2, 8]  # profit
-q = [0, 0, 0.2, 0.5, 0.8, 0.1, 0, 0.7]  # probability of exploding
+# q = [0, 0, 0.2, 0.5, 0.8, 0.1, 0, 0.7]  # probability of exploding
+q = [0, 0, 0, 0, 0, 0, 0, 0]  # all zeros --> standard knapsack
 pi = [1-i for i in q]  # probability of NOT exploding
 c = 15  # capacity
 n = len(w)  # number of items
