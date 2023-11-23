@@ -55,35 +55,60 @@ def solve_deterministic_01KP(w, p, c):
     # solve the model and output the solution
     knapsack_model.setParam('OutputFlag', False)
     knapsack_model.optimize()
-    return knapsack_model.objVal
+    return (knapsack_model.x, knapsack_model.objVal)
 
 
 def TBE_num(n, w, p, pi, c):
-    T = [pi.index(j) for j in pi if j < 1]  # set of time-bomb items (?)
-    T_prime = [pi.index(j) for j in pi if j >= 1]   # deterministic items
+    # T = [pi.index(j) for j in pi if j < 1]  # set of time-bomb items (?)
+    # T_prime = [pi.index(j) for j in pi if j >= 1]   # deterministic items
+    T = [i for i in range(len(pi)) if pi[i] < 1]
+    T_prime = [i for i in range(len(pi)) if pi[i] >= 1]
     z_opt = 0
+    x_opt = [1000]
     w_det = [w[i] for i in T_prime]  # weight of deterministic items
     p_det = [p[i] for i in T_prime]  # profit of deterministic items
+    print("w_det = ")
+    print(w_det)
+    print("T_prime = ")
+    print(T_prime)
+    print("T = ")
+    print(T)
 
     for S in powerset(T):  # Enumerate all time-bomb item subsets
         if sum(w[j] for j in S) <= c:  # Discard trivial cases
-            d = solve_deterministic_01KP(w_det, p_det, c-sum(w[j] for j in S))
+            (x, d) = solve_deterministic_01KP(
+                w_det, p_det, c-sum(w[j] for j in S))
             z = (d + sum(p[j] for j in S)) * (math.prod(pi[j] for j in S))
 
             if z > z_opt:
                 z_opt = z  # Update the best solution value
+                x_opt.append(S)
+                x_opt.append(x)
 
-    return z_opt
+    return (x_opt, z_opt)
 
+
+# simple example to do irl
+# w = [8, 5, 10]
+# p = [4, 2, 5]
+# q = [0.1, 0.9, 0]
+# # q = [0, 0, 0]
 
 w = [4, 2, 5, 4, 5, 1, 3, 5]  # weight
 p = [10, 5, 18, 12, 15, 1, 2, 8]  # profit
-# q = [0, 0, 0.2, 0.5, 0.8, 0.1, 0, 0.7]  # probability of exploding
-q = [0, 0, 0, 0, 0, 0, 0, 0]  # all zeros --> standard knapsack
+q = [0, 0, 0.2, 0.5, 0.8, 0.1, 0, 0.7]  # probability of exploding
+# q = [0, 0, 0, 0, 0, 0, 0, 0]  # all zeros --> standard knapsack
 pi = [1-i for i in q]  # probability of NOT exploding
+print("pi =")
+print(pi)
+print(1.0-0.9)
 c = 15  # capacity
 n = len(w)  # number of items
 
-T = [pi.index(j) for j in pi if j < 1]  # set of time-bomb items
+# T = [pi.index(j) for j in pi if j < 1]  # set of time-bomb items
+T = [i for i in range(len(pi)) if pi[i] < 1]
+
+for S in powerset(T):
+    print(S)
 
 print(TBE_num(n, w, p, pi, c))
