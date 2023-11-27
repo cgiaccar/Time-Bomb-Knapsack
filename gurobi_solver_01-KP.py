@@ -1,6 +1,6 @@
 """
 Gurobi solver for 01-Knapsack problems.
-Contains the solve_deterministic_01KP function used by the exact algorithms.
+Contains the solve_deterministic_01KP function (used by the exact algorithms) and some examples to test it.
 
 """
 
