@@ -1,10 +1,15 @@
-import math
+"""
+First algorithm implementation from the paper: Subset enumeration algorithm.
+Contains some subfunctions, the TBEnum function described in the paper and some examples to test it.
 
-# this import doesn't work; la funzione è stata copia-incollata qui
+"""
+
+import math
+from itertools import chain, combinations
+
+# this import doesn't work; the function has been copy-pasted here
 # import gurobi_solver_01-KP
 import gurobipy as gb
-
-from itertools import chain, combinations
 
 
 def powerset(iterable):
@@ -49,7 +54,7 @@ def solve_deterministic_01KP(w, p, c):
     return (knapsack_model.x, knapsack_model.objVal)
 
 
-def TBE_num(w, p, c, q):
+def TBEnum(w, p, c, q):
 
     n = len(w)  # number of items
     pi = [1-i for i in q]  # probability of NOT exploding
@@ -74,6 +79,8 @@ def TBE_num(w, p, c, q):
     return (x_opt, z_opt)
 
 
+# FOR TESTING
+
 # simple example
 # w = [8, 5, 10]  # weight
 # p = [4, 2, 5]  # profit
@@ -95,4 +102,4 @@ c = 77
 # q = [0, 0, 0, 0, 0, 0, 0, 0]  # all zeros --> standard knapsack
 # c = 15  # capacity
 
-print(TBE_num(w, p, c, q))
+print(TBEnum(w, p, c, q))
