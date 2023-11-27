@@ -14,7 +14,7 @@ defined by the deterministic items and a capacity equal to c − ∑j∈S of w_j
 Then, an optimal solution for the 01-TB-KP is obtained taking the best among
 all these solutions.
 
-!!!! No errors, but it's not working, the result is wrong !!!!
+!!!! IT'S WORKING !!!!
 
 @author: Camilla
 """
@@ -92,17 +92,24 @@ def TBE_num(n, w, p, pi, c):
 # w = [8, 5, 10]
 # p = [4, 2, 5]
 # q = [0.1, 0.9, 0]
-# # q = [0, 0, 0]
+# q = [0, 0, 0]
 
-w = [4, 2, 5, 4, 5, 1, 3, 5]  # weight
-p = [10, 5, 18, 12, 15, 1, 2, 8]  # profit
-q = [0, 0, 0.2, 0.5, 0.8, 0.1, 0, 0.7]  # probability of exploding
+# another example for funsies
+w = [23, 10, 15, 35, 20, 60, 52, 16, 17, 28]
+p = [30, 5, 43, 17, 20, 100, 42, 24, 13, 300]
+q = [0.5, 0, 0.9, 0, 0.2, 0.6, 0.4, 0.3, 0, 1]
+# q = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+c = 77
+
+# w = [4, 2, 5, 4, 5, 1, 3, 5]  # weight
+# p = [10, 5, 18, 12, 15, 1, 2, 8]  # profit
+# q = [0, 0, 0.2, 0.5, 0.8, 0.1, 0, 0.7]  # probability of exploding
 # q = [0, 0, 0, 0, 0, 0, 0, 0]  # all zeros --> standard knapsack
 pi = [1-i for i in q]  # probability of NOT exploding
 print("pi =")
 print(pi)
 print(1.0-0.9)
-c = 15  # capacity
+# c = 15  # capacity
 n = len(w)  # number of items
 
 # T = [pi.index(j) for j in pi if j < 1]  # set of time-bomb items
