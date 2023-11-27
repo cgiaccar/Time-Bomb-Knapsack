@@ -1,6 +1,7 @@
 """
-First algorithm implementation from the paper: Subset enumeration algorithm.
-Contains some utilities, the TBEnum function described in the paper and some examples to test it.
+First algorithm implementation from the paper:
+    Subset enumeration algorithm to solve 01-TimeBomb-Knapsack problems.
+Contains some utilities and the TBEnum function described in the paper.
 
 """
 
@@ -50,29 +51,3 @@ def TBEnum(w, p, c, q):
                 x_opt = update_x_opt(n, S, x, T_prime)
 
     return (x_opt, z_opt)
-
-
-# FOR TESTING
-
-# simple example
-# w = [8, 5, 10]  # weight
-# p = [4, 2, 5]  # profit
-# q = [0.1, 0.9, 0]  # probability of exploding
-# q = [0, 0, 0]  # all zeros --> standard knapsack
-# c = 15
-
-# another example
-w = [23, 10, 15, 35, 20, 60, 52, 16, 17, 28]  # weight
-p = [30, 5, 43, 17, 20, 100, 42, 24, 13, 300]  # profit
-q = [0.5, 0, 0.9, 0, 0.2, 0.6, 0.4, 0.3, 0, 1]  # probability of exploding
-# q = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] # all zeros --> standard knapsack
-c = 77
-
-# used example
-# w = [4, 2, 5, 4, 5, 1, 3, 5]  # weight
-# p = [10, 5, 18, 12, 15, 1, 2, 8]  # profit
-# q = [0, 0, 0.2, 0.5, 0.8, 0.1, 0, 0.7]  # probability of exploding
-# q = [0, 0, 0, 0, 0, 0, 0, 0]  # all zeros --> standard knapsack
-# c = 15  # capacity
-
-print(TBEnum(w, p, c, q))
