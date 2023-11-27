@@ -1,15 +1,12 @@
 """
 First algorithm implementation from the paper: Subset enumeration algorithm.
-Contains some subfunctions, the TBEnum function described in the paper and some examples to test it.
+Contains some utilities, the TBEnum function described in the paper and some examples to test it.
 
 """
 
 import math
 from itertools import chain, combinations
-
-# this import doesn't work; the function has been copy-pasted here
-# import gurobi_solver_01-KP
-import gurobipy as gb
+from gurobi_solver_01_KP import solve_deterministic_01KP
 
 
 def powerset(iterable):
@@ -28,30 +25,6 @@ def update_x_opt(n, S, x, T_prime):
             x_opt[index] = 1
         i += 1
     return x_opt
-
-
-def solve_deterministic_01KP(w, p, c):
-
-    # numbers/data we'll use
-    n = len(w)  # number of items
-
-    # optimization model
-    knapsack_model = gb.Model()
-
-    # add decision variables
-    x = knapsack_model.addVars(n, vtype=gb.GRB.BINARY, name="x")
-
-    # add the constraints
-    knapsack_model.addConstr(sum(w[j]*x[j] for j in range(n)) <= c)
-
-    # objective function
-    obj_fn = sum(p[j]*x[j] for j in range(n))
-    knapsack_model.setObjective(obj_fn, gb.GRB.MAXIMIZE)
-
-    # solve the model and output the solution
-    knapsack_model.setParam('OutputFlag', False)
-    knapsack_model.optimize()
-    return (knapsack_model.x, knapsack_model.objVal)
 
 
 def TBEnum(w, p, c, q):
