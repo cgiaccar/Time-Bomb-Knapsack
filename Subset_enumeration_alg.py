@@ -7,6 +7,7 @@ Contains some utilities and the TBEnum function described in the paper.
 
 import math
 from itertools import chain, combinations
+from time import perf_counter
 from gurobi_solver_01_KP import solve_deterministic_01KP
 
 
@@ -29,6 +30,7 @@ def update_x_opt(n, S, x, T_prime):
 
 
 def TBEnum(w, p, c, q):
+    start_time = perf_counter()
 
     n = len(w)  # number of items
     pi = [1-i for i in q]  # probability of NOT exploding
@@ -42,7 +44,7 @@ def TBEnum(w, p, c, q):
 
     for S in powerset(T):  # Enumerate all time-bomb item subsets
         if sum(w[j] for j in S) <= c:  # Discard trivial cases
-            (x, d) = solve_deterministic_01KP(
+            (x, d, _) = solve_deterministic_01KP(
                 w_det, p_det, c-sum(w[j] for j in S))
             z = (d + sum(p[j] for j in S)) * (math.prod(pi[j] for j in S))
 
@@ -50,4 +52,5 @@ def TBEnum(w, p, c, q):
                 z_opt = z  # Update the best solution value
                 x_opt = update_x_opt(n, S, x, T_prime)
 
-    return (x_opt, z_opt)
+    end_time = perf_counter()
+    return (x_opt, z_opt, end_time-start_time)

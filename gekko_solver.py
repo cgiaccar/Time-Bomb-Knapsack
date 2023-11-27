@@ -26,5 +26,6 @@ def solve_with_gekko(w, p, c, q):
     m.Maximize(sum(p[i]*x[i] for i in range(n)) *
                np.prod([1-(q[j]*x[j]) for j in T]))
 
-    m.solve(disp=True)
-    return x  # print solution
+    m.solve(disp=False)
+
+    return (x, -m.options.OBJFCNVAL, m.options.SOLVETIME)
