@@ -1,24 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Jul  4 16:19:53 2023
-
-Implementation of the first algorithm from the paper:
-    Subset Enumeration
-For each subset of time-bomb items S ⊆ T, such that ∑j∈S of w_j ≤ c,
-consider the solution obtained by (i) forcing in the solution all items in the
-current set S; (ii) forbidding all remaining time-bomb items (i.e., those in
-set T⧵S); and (iii) completing the solution using some deterministic items.
-In particular, in the last step, we solve a deterministic 01-KP instance
-defined by the deterministic items and a capacity equal to c − ∑j∈S of w_j.
-Then, an optimal solution for the 01-TB-KP is obtained taking the best among
-all these solutions.
-
-!!!! IT'S WORKING !!!!
-
-@author: Camilla
-"""
-
 import math
 
 # this import doesn't work; la funzione è stata copia-incollata qui
@@ -59,20 +38,12 @@ def solve_deterministic_01KP(w, p, c):
 
 
 def TBE_num(n, w, p, pi, c):
-    # T = [pi.index(j) for j in pi if j < 1]  # set of time-bomb items (?)
-    # T_prime = [pi.index(j) for j in pi if j >= 1]   # deterministic items
-    T = [i for i in range(len(pi)) if pi[i] < 1]
-    T_prime = [i for i in range(len(pi)) if pi[i] >= 1]
+    T = [i for i in range(len(pi)) if pi[i] < 1]  # set of time-bomb items
+    T_prime = [i for i in range(len(pi)) if pi[i] >= 1]  # deterministic items
     z_opt = 0
-    x_opt = [1000]
+    x_opt = []
     w_det = [w[i] for i in T_prime]  # weight of deterministic items
     p_det = [p[i] for i in T_prime]  # profit of deterministic items
-    print("w_det = ")
-    print(w_det)
-    print("T_prime = ")
-    print(T_prime)
-    print("T = ")
-    print(T)
 
     for S in powerset(T):  # Enumerate all time-bomb item subsets
         if sum(w[j] for j in S) <= c:  # Discard trivial cases
@@ -82,40 +53,35 @@ def TBE_num(n, w, p, pi, c):
 
             if z > z_opt:
                 z_opt = z  # Update the best solution value
-                x_opt.append(S)
+                x_opt = [S]
                 x_opt.append(x)
 
     return (x_opt, z_opt)
 
 
-# simple example to do irl
-# w = [8, 5, 10]
-# p = [4, 2, 5]
-# q = [0.1, 0.9, 0]
-# q = [0, 0, 0]
+# simple example
+# w = [8, 5, 10]  # weight
+# p = [4, 2, 5]  # profit
+# q = [0.1, 0.9, 0]  # probability of exploding
+# q = [0, 0, 0]  # all zeros --> standard knapsack
+# c = 15
 
-# another example for funsies
-w = [23, 10, 15, 35, 20, 60, 52, 16, 17, 28]
-p = [30, 5, 43, 17, 20, 100, 42, 24, 13, 300]
-q = [0.5, 0, 0.9, 0, 0.2, 0.6, 0.4, 0.3, 0, 1]
-# q = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+# another example
+w = [23, 10, 15, 35, 20, 60, 52, 16, 17, 28]  # weight
+p = [30, 5, 43, 17, 20, 100, 42, 24, 13, 300]  # profit
+q = [0.5, 0, 0.9, 0, 0.2, 0.6, 0.4, 0.3, 0, 1]  # probability of exploding
+# q = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] # all zeros --> standard knapsack
 c = 77
 
+# used example
 # w = [4, 2, 5, 4, 5, 1, 3, 5]  # weight
 # p = [10, 5, 18, 12, 15, 1, 2, 8]  # profit
 # q = [0, 0, 0.2, 0.5, 0.8, 0.1, 0, 0.7]  # probability of exploding
 # q = [0, 0, 0, 0, 0, 0, 0, 0]  # all zeros --> standard knapsack
-pi = [1-i for i in q]  # probability of NOT exploding
-print("pi =")
-print(pi)
-print(1.0-0.9)
 # c = 15  # capacity
+
+pi = [1-i for i in q]  # probability of NOT exploding
 n = len(w)  # number of items
-
-# T = [pi.index(j) for j in pi if j < 1]  # set of time-bomb items
-T = [i for i in range(len(pi)) if pi[i] < 1]
-
-for S in powerset(T):
-    print(S)
+T = [i for i in range(len(pi)) if pi[i] < 1]  # set of time-bomb items
 
 print(TBE_num(n, w, p, pi, c))
