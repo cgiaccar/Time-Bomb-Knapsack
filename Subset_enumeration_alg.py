@@ -13,6 +13,18 @@ def powerset(iterable):
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
 
+def update_x_opt(S, x, T_prime):
+    x_opt = [0 for i in range(n)]
+    for index in S:
+        x_opt[index] = 1
+    i = 0
+    for index in T_prime:
+        if x[i] == 1:
+            x_opt[index] = 1
+        i += 1
+    return x_opt
+
+
 def solve_deterministic_01KP(w, p, c):
 
     # numbers/data we'll use
@@ -41,7 +53,7 @@ def TBE_num(n, w, p, pi, c):
     T = [i for i in range(len(pi)) if pi[i] < 1]  # set of time-bomb items
     T_prime = [i for i in range(len(pi)) if pi[i] >= 1]  # deterministic items
     z_opt = 0
-    x_opt = []
+    x_opt = [0 for i in range(n)]
     w_det = [w[i] for i in T_prime]  # weight of deterministic items
     p_det = [p[i] for i in T_prime]  # profit of deterministic items
 
@@ -53,8 +65,7 @@ def TBE_num(n, w, p, pi, c):
 
             if z > z_opt:
                 z_opt = z  # Update the best solution value
-                x_opt = [S]
-                x_opt.append(x)
+                x_opt = update_x_opt(S, x, T_prime)
 
     return (x_opt, z_opt)
 
