@@ -13,7 +13,7 @@ def powerset(iterable):
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
 
-def update_x_opt(S, x, T_prime):
+def update_x_opt(n, S, x, T_prime):
     x_opt = [0 for i in range(n)]
     for index in S:
         x_opt[index] = 1
@@ -49,9 +49,13 @@ def solve_deterministic_01KP(w, p, c):
     return (knapsack_model.x, knapsack_model.objVal)
 
 
-def TBE_num(n, w, p, pi, c):
+def TBE_num(w, p, c, q):
+
+    n = len(w)  # number of items
+    pi = [1-i for i in q]  # probability of NOT exploding
     T = [i for i in range(len(pi)) if pi[i] < 1]  # set of time-bomb items
     T_prime = [i for i in range(len(pi)) if pi[i] >= 1]  # deterministic items
+
     z_opt = 0
     x_opt = [0 for i in range(n)]
     w_det = [w[i] for i in T_prime]  # weight of deterministic items
@@ -65,7 +69,7 @@ def TBE_num(n, w, p, pi, c):
 
             if z > z_opt:
                 z_opt = z  # Update the best solution value
-                x_opt = update_x_opt(S, x, T_prime)
+                x_opt = update_x_opt(n, S, x, T_prime)
 
     return (x_opt, z_opt)
 
@@ -91,8 +95,4 @@ c = 77
 # q = [0, 0, 0, 0, 0, 0, 0, 0]  # all zeros --> standard knapsack
 # c = 15  # capacity
 
-pi = [1-i for i in q]  # probability of NOT exploding
-n = len(w)  # number of items
-T = [i for i in range(len(pi)) if pi[i] < 1]  # set of time-bomb items
-
-print(TBE_num(n, w, p, pi, c))
+print(TBE_num(w, p, c, q))
