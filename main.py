@@ -28,14 +28,14 @@ c = 77
 # q = [0, 0, 0, 0, 0, 0, 0, 0]  # all zeros --> standard knapsack
 # c = 15  # capacity
 
-gekko_sol = solve_with_gekko(w, p, c, q)
-enum_sol = TBEnum(w, p, c, q)
-gurobi_sol = solve_deterministic_01KP(w, p, c)
+gekko_x, gekko_obj, gekko_time = solve_with_gekko(w, p, c, q)
+enum_x, enum_obj, enum_time = TBEnum(w, p, c, q)
+gurobi_x, gurobi_obj, gurobi_time = solve_deterministic_01KP(w, p, c)
 
 print("Using \"another example\"")
-print("\nGEKKO solution:\nx = %s \nobj = %s \ntime = %s" %
-      (gekko_sol[0], gekko_sol[1], gekko_sol[2]))
-print("\nSubset Enumeration algorithm solution:\nx = %s \nobj = %s \ntime = %s" %
-      (enum_sol[0], enum_sol[1], enum_sol[2]))
-print("\nSimple Gurobi solution:\nx = %s \nobj = %s \ntime = %s" %
-      (gurobi_sol[0], gurobi_sol[1], gurobi_sol[2]))
+print(
+    f"\nGEKKO solution:\nx = {gekko_x} \nobj = {gekko_obj} \ntime = {gekko_time:0.6f}")
+print(
+    f"\nSubset Enumeration algorithm solution:\nx = {enum_x} \nobj = {enum_obj} \ntime = {enum_time:0.6f}")
+print(
+    f"\nSimple Gurobi solution:\nx = {gurobi_x} \nobj = {gurobi_obj} \ntime = {gurobi_time:0.6f}")
