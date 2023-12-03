@@ -5,8 +5,8 @@ Contains some utilities and the TBEnum function described in the paper.
 
 """
 
-import multiprocessing
-from multiprocessing import Pool
+from itertools import repeat
+import multiprocessing as mp
 import math
 from itertools import chain, combinations
 from time import perf_counter
@@ -32,27 +32,24 @@ def update_x_opt(n, S, x, T_prime):
     return x_opt
 
 
-def work_log(work_data):
-    print(" Process %s waiting %s seconds" % (work_data[0], work_data[1]))
-    time.sleep(int(work_data[1]))
-    print(" Process %s Finished." % work_data[0])
-    # for S in powerset(T):  # Enumerate all time-bomb item subsets
-    # if sum(w[j] for j in S) <= c:  # Discard trivial cases
-    #     (x, d, _) = solve_deterministic_01KP(
-    #         w_det, p_det, c-sum(w[j] for j in S))
-    #     z = (d + sum(p[j] for j in S)) * (math.prod(pi[j] for j in S))
-
-    #     if z > z_opt:
-    #         z_opt = z  # Update the best solution value
-    #         x_opt = update_x_opt(n, S, x, T_prime)
+def chunks(l, n):
+    """Yield n number of striped chunks from l."""
+    for i in range(0, n):
+        yield l[i::n]
 
 
-def ParTBEnum(w, p, c, q):
-    start_time = perf_counter()
+def wrapper(tup):
+    return work_log(*tup)
+
+
+def work_log(sets, tup):
+    w = tup[0]
+    p = tup[1]
+    c = tup[2]
+    q = tup[3]
 
     n = len(w)  # number of items
     pi = [1-i for i in q]  # probability of NOT exploding
-    T = [i for i in range(len(pi)) if pi[i] < 1]  # set of time-bomb items
     T_prime = [i for i in range(len(pi)) if pi[i] >= 1]  # deterministic items
 
     z_opt = 0
@@ -60,22 +57,60 @@ def ParTBEnum(w, p, c, q):
     w_det = [w[i] for i in T_prime]  # weight of deterministic items
     p_det = [p[i] for i in T_prime]  # profit of deterministic items
 
-    work_log(work_data)
+    for S in sets:  # Enumerate all time-bomb item subsets
+        if sum(w[j] for j in S) <= c:  # Discard trivial cases
+            (x, d, _) = solve_deterministic_01KP(
+                w_det, p_det, c-sum(w[j] for j in S))
+            z = (d + sum(p[j] for j in S)) * (math.prod(pi[j] for j in S))
+
+            if z > z_opt:
+                z_opt = z  # Update the best solution value
+                x_opt = update_x_opt(n, S, x, T_prime)
+                return x_opt, z_opt
+
+
+def ParTBEnum(w, p, c, q):
+    start_time = perf_counter()
+
+    print("hello")
+
+    # n = len(w)  # number of items
+    pi = [1-i for i in q]  # probability of NOT exploding
+    T = [i for i in range(len(pi)) if pi[i] < 1]  # set of time-bomb items
+    # T_prime = [i for i in range(len(pi)) if pi[i] >= 1]  # deterministic items
+
+    # z_opt = 0
+    # x_opt = [0 for i in range(n)]
+    # w_det = [w[i] for i in T_prime]  # weight of deterministic items
+    # p_det = [p[i] for i in T_prime]  # profit of deterministic items
+
+    pwset = powerset(T)
+    # divide powerset into chunks
+    sets = list(chunks([*pwset], mp.cpu_count()))
+
+    # pool.map() wants a single tuple as argument
+    # tup = [w, c, w_det, p_det, pi, z_opt, x_opt]
+    tup = [w, p, c, q]
+    # arg2 = [w, p, c, q]*len(sets)
+    # tup = [*zip(sets, arg2)]
+
+    pool = mp.Pool(mp.cpu_count())  # pool setup
+    result = pool.starmap(work_log, zip(sets, repeat(tup)))
+    # kwds={'w': w, 'c': c, 'w_det': w_det, 'p_det': p_det, 'pi': pi, 'z_opt': z_opt, 'x_opt': x_opt})  # parallel execution
+    print(result)
 
     end_time = perf_counter()
-    return (x_opt, z_opt, end_time-start_time)
-
-
-# Parallel execution handling
-print("Number of cpu : ", multiprocessing.cpu_count())
-
-work_data = (["A", 7], ["B", 2], ["C", 1], ["D", 3])
-
-
-def pool_handler():
-    p = Pool(multiprocessing.cpu_count())
-    p.map(work_log, work_data)
+    # return (x_opt, z_opt, end_time-start_time)
 
 
 if __name__ == '__main__':
-    pool_handler()
+    # another example
+    w = [23, 10, 15, 35, 20, 60, 52, 16, 17, 28]  # weight
+    p = [30, 5, 43, 17, 20, 100, 42, 24, 13, 300]  # profit
+    q = [0.5, 0, 0.9, 0, 0.2, 0.6, 0.4, 0.3, 0, 1]  # probability of exploding
+    # q = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] # all zeros --> standard knapsack
+    c = 77
+
+    print("Number of cpu : ", mp.cpu_count())
+
+    ParTBEnum(w, p, c, q)

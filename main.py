@@ -6,7 +6,7 @@ This files contains some tests for the solvers in the form of different problems
 from gekko_solver import solve_with_gekko
 from Subset_enumeration_alg import TBEnum
 from gurobi_solver_01_KP import solve_deterministic_01KP
-from Parallel_subset_enum_alg import ParTBEnum
+# from Parallel_subset_enum_alg import ParTBEnum
 
 
 # simple example
@@ -33,7 +33,7 @@ c = 77
 gekko_x, gekko_obj, gekko_time = solve_with_gekko(w, p, c, q)
 enum_x, enum_obj, enum_time = TBEnum(w, p, c, q)
 gurobi_x, gurobi_obj, gurobi_time = solve_deterministic_01KP(w, p, c)
-par_x, par_obj, par_time = TBEnum(w, p, c, q)
+# par_x, par_obj, par_time = TBEnum(w, p, c, q)
 
 print("Using \"another example\"")
 print(
@@ -42,5 +42,5 @@ print(
     f"\nSubset Enumeration algorithm solution:\nx = {enum_x} \nobj = {enum_obj} \ntime = {enum_time:0.6f}")
 print(
     f"\nSimple Gurobi solution:\nx = {gurobi_x} \nobj = {gurobi_obj} \ntime = {gurobi_time:0.6f}")
-print(
-    f"\nParallel Subset Enumeration algorithm solution:\nx = {enum_x} \nobj = {enum_obj} \ntime = {enum_time:0.6f}")
+# print(
+#    f"\nParallel Subset Enumeration algorithm solution:\nx = {enum_x} \nobj = {enum_obj} \ntime = {enum_time:0.6f}")
