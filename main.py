@@ -4,7 +4,7 @@ This files contains some tests for the solvers in the form of different problems
 """
 
 from gekko_solver import solve_with_gekko
-from Subset_enumeration_alg import TBEnum
+from Parallel_enum_prova import TBEnum
 from gurobi_solver_01_KP import solve_deterministic_01KP
 # from Parallel_subset_enum_alg import ParTBEnum
 
