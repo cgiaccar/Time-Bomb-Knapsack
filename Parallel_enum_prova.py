@@ -29,6 +29,10 @@ def update_x_opt(n, S, x, T_prime):
     return x_opt
 
 
+def wrapper(tup):
+    return task(*tup)
+
+
 def task(S, w, c, w_det, p_det, p, pi, z_opt, x_opt, n, T_prime):
     if sum(w[j] for j in S) <= c:  # Discard trivial cases
         (x, d, _) = solve_deterministic_01KP(
@@ -55,9 +59,14 @@ def TBEnum(w, p, c, q):
     w_det = [w[i] for i in T_prime]  # weight of deterministic items
     p_det = [p[i] for i in T_prime]  # profit of deterministic items
 
-    for S in powerset(T):  # Enumerate all time-bomb item subsets
-        x_opt, z_opt = task(S, w, c, w_det, p_det, p,
-                            pi, z_opt, x_opt, n, T_prime)
+    # Enumerate all time-bomb item subsets
+    arguments = [(S, w, c, w_det, p_det, p, pi, z_opt,
+                  x_opt, n, T_prime) for S in powerset(T)]
+
+    x_results, z_results = zip(*map(wrapper, arguments))  # take results
+    z_opt = max(z_results)  # find max z
+    opt_index = z_results.index(z_opt)  # get its index
+    x_opt = x_results[opt_index]  # get corresponding solution
 
     end_time = perf_counter()
     return (x_opt, z_opt, end_time-start_time)
