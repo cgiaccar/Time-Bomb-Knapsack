@@ -39,10 +39,11 @@ def divide_in_chunks(l, n):
 
 
 def wrapper(tup):
-    return task(*tup)
+    """Since pool.map needs a single argument, wrapper calls the function after unpacking the arguments"""
+    return find_opt_in_chunk(*tup)
 
 
-def task(chunk, w, c, w_det, p_det, p, pi, z_opt, x_opt, n, T_prime):
+def find_opt_in_chunk(chunk, w, c, w_det, p_det, p, pi, z_opt, x_opt, n, T_prime):
     for S in chunk:  # Enumerate all time-bomb item subsets
         if sum(w[j] for j in S) <= c:  # Discard trivial cases
             (x, d, _) = solve_deterministic_01KP(
@@ -80,6 +81,7 @@ def ParTBEnum(w, p, c, q):
 
         # create a process pool that uses all cpus
         with mp.Pool(mp.cpu_count()) as pool:
+
             # call the function for each item in parallel and take results
             x_results, z_results = zip(
                 *pool.map(wrapper, arguments))
@@ -94,12 +96,14 @@ def ParTBEnum(w, p, c, q):
 
 if __name__ == '__main__':
 
+    # piece of code taken from the main
+
     # another example
     w = [23, 10, 15, 35, 20, 60, 52, 16, 17, 28]  # weight
     p = [30, 5, 43, 17, 20, 100, 42, 24, 13, 300]  # profit
     q = [0.5, 0, 0.9, 0, 0.2, 0.6, 0.4, 0.3, 0, 1]  # probability of exploding
     # q = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] # all zeros --> standard knapsack
     c = 77
-    enum_x, enum_obj, enum_time = ParTBEnum(w, p, c, q)
+    par_x, par_obj, par_time = ParTBEnum(w, p, c, q)
     print(
-        f"\nSubset Enumeration algorithm solution:\nx = {enum_x} \nobj = {enum_obj} \ntime = {enum_time:0.6f}")
+        f"\nParallel Subset Enumeration algorithm solution:\nx = {par_x} \nobj = {par_obj} \ntime = {par_time:0.6f}")
