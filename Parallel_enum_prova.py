@@ -32,19 +32,26 @@ def update_x_opt(n, S, x, T_prime):
     return x_opt
 
 
+def divide_in_chunks(l, n):
+    """Yield n number of striped chunks from l."""
+    for i in range(0, n):
+        yield l[i::n]
+
+
 def wrapper(tup):
     return task(*tup)
 
 
-def task(S, w, c, w_det, p_det, p, pi, z_opt, x_opt, n, T_prime):
-    if sum(w[j] for j in S) <= c:  # Discard trivial cases
-        (x, d, _) = solve_deterministic_01KP(
-            w_det, p_det, c-sum(w[j] for j in S))
-        z = (d + sum(p[j] for j in S)) * (math.prod(pi[j] for j in S))
+def task(chunk, w, c, w_det, p_det, p, pi, z_opt, x_opt, n, T_prime):
+    for S in chunk:  # Enumerate all time-bomb item subsets
+        if sum(w[j] for j in S) <= c:  # Discard trivial cases
+            (x, d, _) = solve_deterministic_01KP(
+                w_det, p_det, c-sum(w[j] for j in S))
+            z = (d + sum(p[j] for j in S)) * (math.prod(pi[j] for j in S))
 
-        if z > z_opt:
-            z_opt = z  # Update the best solution value
-            x_opt = update_x_opt(n, S, x, T_prime)
+            if z > z_opt:
+                z_opt = z  # Update the best solution value
+                x_opt = update_x_opt(n, S, x, T_prime)
 
     return x_opt, z_opt
 
@@ -63,20 +70,19 @@ def TBEnum(w, p, c, q):
     w_det = [w[i] for i in T_prime]  # weight of deterministic items
     p_det = [p[i] for i in T_prime]  # profit of deterministic items
 
-    # Enumerate all time-bomb item subsets and combine with necessary parameters
-    arguments = [(S, w, c, w_det, p_det, p, pi, z_opt,
-                  x_opt, n, T_prime) for S in powerset(T)]
+    # divide powerset(T) in a number of chunks depending on cpus
+    chunks = list(divide_in_chunks([*powerset(T)], mp.cpu_count()))
+
+    # create a single object combining chunk and necessary parameters
+    arguments = [(chunk, w, c, w_det, p_det, p, pi, z_opt,
+                  x_opt, n, T_prime) for chunk in chunks]
 
     # create a process pool that uses all cpus
     with mp.Pool(mp.cpu_count()) as pool:
         # call the function for each item in parallel and take results
-        # x_results, z_results = zip(
-        #     *pool.map(wrapper, arguments))
-        results = pool.map(wrapper, arguments)
-        x_results = [result[0] for result in results]
-        z_results = [result[1] for result in results]
+        x_results, z_results = zip(
+            *pool.map(wrapper, arguments))
 
-        # x_results, z_results = zip(*map(wrapper, arguments))  # take results
         z_opt = max(z_results)  # find max z
         opt_index = z_results.index(z_opt)  # get its index
         x_opt = x_results[opt_index]  # get corresponding solution
