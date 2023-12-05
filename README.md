@@ -10,16 +10,16 @@ Project for the Mathematical Optimization class on the paper "[Exact algorithms 
 
         - **data.py** (code to load the data)
 
-    - **Dynamic_programming_alg.py** (first try at the DP approach of the paper)  
-
     - **Subset_enumeration_alg.py** (working implementation of the first algorithm of the paper)
+
+    - **Parallel_subset_enum_alg.py** (parallelization of the first algorithm of the paper)
 
     - **gekko_solver.py** (working problem formalization in GEKKO)
 
-    - **gurobi_solver_01_KP.py** (01-Knapsack implementation in Gurobi, used in Subset_enumeration_alg)
+    - **gurobi_solver_01_KP.py** (01-Knapsack implementation in Gurobi, used in the enumeration algorithms)
 
-    - **main.py** (runs SubsetEnum, gekko and gurobi on some small problems to test the results)
+    - **main.py** (runs all solvers and algorithms on some small problems to test the results)
 
-    - **Discarded code/** (stuff I started implementing that is not useful anymore; contains try_with_scipy.py, a non-working formalization of the problem in Gurobi and everything regarding the Branch&Bound algorithm of the paper)
+    - **Discarded code/** (stuff I started implementing that is not useful anymore; contains non-working formalizations of the problem in Gurobi and SciPy, everything regarding the Branch&Bound algorithm of the paper and a try at the DP approach)
 
     - **README.md**
