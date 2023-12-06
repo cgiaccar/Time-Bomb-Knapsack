@@ -1,15 +1,10 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Created on Tue Jul 11 19:25:36 2023
-
 Code to load all the files into dataframes
 This will create three dictionaries with the name of the file as key and value:
     its n in ns,
     its capacity in capacities
     and its corresponding dataframe in dataframes.
 
-@author: Camilla
 """
 
 import glob
@@ -32,7 +27,7 @@ import pandas as pd
 # Now import everything
 
 # All files and directories ending with .txt and that don't begin with a dot:
-filenames = glob.glob("generated-instances/*.txt")
+filenames = glob.glob("Data/generated-instances/*.txt")
 
 # empty dictionaries to store n, capacity and dataframe from each file
 ns = dict()
@@ -51,7 +46,7 @@ for file in filenames:
     dataframes[file] = dataframe
 
 # test print to check if it worked
-test_file = "generated-instances/type3-5000-0-0.5-9.txt"
+test_file = "Data/generated-instances/type3-5000-0-0.5-9.txt"
 print(f"{test_file = }")
 print(f"n = {ns[test_file]}")
 print(f"capacity = {capacities[test_file]}")
