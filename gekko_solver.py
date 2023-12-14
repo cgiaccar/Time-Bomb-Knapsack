@@ -29,4 +29,4 @@ def solve_with_gekko(w, p, c, q):
     m.solve(disp=False)
 
     # unpack solution for readability before returning
-    return ([item for items in x for item in items], -m.options.OBJFCNVAL, m.options.SOLVETIME)
+    return ([int(item) for items in x for item in items], -m.options.OBJFCNVAL, m.options.SOLVETIME)
