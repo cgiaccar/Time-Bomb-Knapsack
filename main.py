@@ -7,8 +7,8 @@ from gurobi_solver_01_KP import solve_deterministic_01KP
 from gekko_solver import solve_with_gekko
 from Subset_enumeration_alg import TBEnum
 from Parallel_subset_enum_alg import ParTBEnum
-import random
 import numpy as np
+import random
 
 
 if __name__ == '__main__':
@@ -45,9 +45,7 @@ if __name__ == '__main__':
     np.random.seed(0)
     random.seed(0)
 
-    # SOL for n=20, frac=4 : x = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0], obj = 415.4399392044384
-    # SOL for n=21, frac=4 : x = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0], obj = 313.24171416014656
-    n = 21
+    n = 1
     frac = 4
 
     q = np.random.uniform(0, 0.99999, n)
@@ -77,3 +75,21 @@ if __name__ == '__main__':
     par_x, par_obj, par_time = ParTBEnum(w, p, c, q)
     print(
         f"\nParallel Subset Enumeration algorithm solution:\nx = {par_x} \nobj = {par_obj} \ntime = {par_time:0.6f}")
+
+    import matplotlib.pyplot as plt
+
+    x = range(1, 10)
+    y1 = [0.0029, 0.0029, 0.0039, 0.0039,
+          0.0029, 0.0049, 0.0039, 0.0039, 0.0034]
+    y2 = [0.002, 0.0023, 0.003, 0.0031, 0.002, 0.004, 0.003, 0.008, 0.0099]
+    y3 = [0.9, 0.89, 0.97, 0.9, 1.09, 0.98, 0.99, 1.1, 1.11]
+
+    plt.plot(x, y1, label='gekko')
+    plt.plot(x, y2, label='enum')
+    plt.plot(x, y3, label='parall')
+
+    plt.xlabel("Number of elements")
+    plt.ylabel("Execution time")
+    plt.legend()
+    plt.title('Time Comparison')
+    plt.show()
