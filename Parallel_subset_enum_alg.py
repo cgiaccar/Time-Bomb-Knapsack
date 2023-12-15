@@ -43,7 +43,15 @@ def wrapper(tup):
     return find_opt_in_chunk(*tup)
 
 
-def find_opt_in_chunk(chunk, w, c, w_det, p_det, p, pi, z_opt, x_opt, n, T_prime):
+def find_opt_in_chunk(chunk, w, c, p, pi):
+    n = len(w)  # number of items
+    T_prime = [i for i in range(len(pi)) if pi[i] >= 1]  # deterministic items
+    w_det = [w[i] for i in T_prime]  # weight of deterministic items
+    p_det = [p[i] for i in T_prime]  # profit of deterministic items
+
+    z_opt = 0
+    x_opt = [0 for i in range(n)]
+
     for S in chunk:  # Enumerate all time-bomb item subsets
         if sum(w[j] for j in S) <= c:  # Discard trivial cases
             (x, d, _) = solve_deterministic_01KP(
@@ -61,30 +69,20 @@ def ParTBEnum(w, p, c, q):
     if __name__ == 'Parallel_subset_enum_alg' or __name__ == '__main__':
         start_time = perf_counter()
 
-        n = len(w)  # number of items
         pi = [1-i for i in q]  # probability of NOT exploding
         T = [i for i in range(len(pi)) if pi[i] < 1]  # set of time-bomb items
-        # deterministic items
-        T_prime = [i for i in range(len(pi)) if pi[i] >= 1]
-
-        z_opt = 0
-        x_opt = [0 for i in range(n)]
-        w_det = [w[i] for i in T_prime]  # weight of deterministic items
-        p_det = [p[i] for i in T_prime]  # profit of deterministic items
 
         # divide powerset(T) in a number of chunks depending on cpus
         chunks = list(divide_in_chunks([*powerset(T)], mp.cpu_count()))
 
         # create a single object combining chunk and necessary parameters
-        arguments = [(chunk, w, c, w_det, p_det, p, pi, z_opt,
-                      x_opt, n, T_prime) for chunk in chunks]
+        arguments = [(chunk, w, c, p, pi) for chunk in chunks]
 
         # create a process pool that uses all cpus
         with mp.Pool(mp.cpu_count()) as pool:
 
             # call the function for each item in parallel and take results
-            x_results, z_results = zip(
-                *pool.map(wrapper, arguments))
+            x_results, z_results = zip(*pool.map(wrapper, arguments))
 
             z_opt = max(z_results)  # find max z
             opt_index = z_results.index(z_opt)  # get its index
