@@ -1,39 +1,40 @@
 """
 First algorithm implementation from the paper:
     Subset enumeration algorithm to solve 01-TimeBomb-Knapsack problems.
-Contains some utilities and the TBEnum function described in the paper.
+Contains some utilities and the TBEnum (here ParTBEnum) function described in the paper.
 
-Parallelized version. Can be called by the main or run as is.
+Parallelized version. Can be called by the main or run as is with a simple example.
 
 """
 
+
+import multiprocessing as mp
 import math
 from itertools import chain, combinations
 from time import perf_counter
-import multiprocessing as mp
 from gurobi_solver_01_KP import solve_deterministic_01KP
 
 
 def powerset(iterable):
-    "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
+    """powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"""
     s = list(iterable)
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
 
 def update_x_opt(n, S, x, T_prime):
-    x_opt = [0 for i in range(n)]
+    x_opt = [0 for i in range(n)]   # no items picked
     for index in S:
-        x_opt[index] = 1
+        x_opt[index] = 1    # pick the time-bomb items
     i = 0
-    for index in T_prime:
-        if x[i] == 1:
-            x_opt[index] = 1
+    for index in T_prime:       # for each deterministic item
+        if x[i] == 1:           # if it was picked in x
+            x_opt[index] = 1    # pick it in x_opt
         i += 1
     return x_opt
 
 
 def divide_in_chunks(l, n):
-    """Yield n number of striped chunks from l."""
+    """Yield n number of striped chunks from l"""
     for i in range(0, n):
         yield l[i::n]
 
@@ -52,14 +53,14 @@ def find_opt_in_chunk(chunk, w, c, p, pi):
     z_opt = 0
     x_opt = [0 for i in range(n)]
 
-    for S in chunk:  # Enumerate all time-bomb item subsets
-        if sum(w[j] for j in S) <= c:  # Discard trivial cases
+    for S in chunk:  # enumerate all time-bomb item subsets
+        if sum(w[j] for j in S) <= c:   # discard trivial cases
             (x, d, _) = solve_deterministic_01KP(
                 w_det, p_det, c-sum(w[j] for j in S))
             z = (d + sum(p[j] for j in S)) * (math.prod(pi[j] for j in S))
 
             if z > z_opt:
-                z_opt = z  # Update the best solution value
+                z_opt = z   # update the best solution value
                 x_opt = update_x_opt(n, S, x, T_prime)
 
     return x_opt, z_opt
@@ -96,7 +97,6 @@ if __name__ == '__main__':
 
     # piece of code taken from the main
 
-    # another example
     w = [23, 10, 15, 35, 20, 60, 52, 16, 17, 28]  # weight
     p = [30, 5, 43, 17, 20, 100, 42, 24, 13, 300]  # profit
     q = [0.5, 0, 0.9, 0, 0.2, 0.6, 0.4, 0.3, 0, 1]  # probability of exploding
