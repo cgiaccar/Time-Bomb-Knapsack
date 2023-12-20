@@ -95,7 +95,7 @@ def ParTBEnum(w, p, c, q):
 
 if __name__ == '__main__':
 
-    # piece of code taken from the main
+    # little problem to quickly test the parallel implementation
 
     w = [23, 10, 15, 35, 20, 60, 52, 16, 17, 28]  # weight
     p = [30, 5, 43, 17, 20, 100, 42, 24, 13, 300]  # profit
