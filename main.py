@@ -16,6 +16,7 @@ if __name__ == '__main__':
     np.random.seed(0)
     random.seed(0)
 
+    n_max = 25
     frac = 4
 
     # create time lists for plot
@@ -23,7 +24,7 @@ if __name__ == '__main__':
     y_enum = []
     y_par = []
 
-    for n in range(1, 20):
+    for n in range(1, n_max+1):
 
         ### Random problem ###
         q = np.random.uniform(0, 0.99999, n)
@@ -32,7 +33,7 @@ if __name__ == '__main__':
         w = [random.randint(1, 300) for i in range(n)]
         c = int(sum(w)/frac)
 
-        print(f"{w = }\n{p = }\n{c = }\n{q = }")
+        print(f"\n{n = }\n{w = }\n{p = }\n{c = }\n{q = }")
 
         ### Print solutions ###
         gekko_x, gekko_obj, gekko_time = solve_with_gekko(w, p, c, q)
@@ -53,7 +54,7 @@ if __name__ == '__main__':
         y_par.append(par_time)
 
     ### Plot results ###
-    x = range(1, 20)
+    x = range(1, n_max+1)
 
     plt.plot(x, y_gekko, label='gekko')
     plt.plot(x, y_enum, label='enum')
